@@ -1,4 +1,4 @@
-import { SessionManager } from "./session_manager.ts";
+import { SessionRuntime } from "./session_runtime.ts";
 import { strerror, VERSION } from "./utils.ts";
 import { Command } from "commander";
 import express from "express";
@@ -53,7 +53,7 @@ httpServer
         );
     });
 
-const sessionManager = new SessionManager();
+const sessionManager = new SessionRuntime();
 httpServer.get("/", async (request, response) => {
     response
         .status(400)
@@ -104,12 +104,12 @@ httpServer.post("/get_pot", async (request, response) => {
 });
 
 httpServer.post("/invalidate_caches", async (request, response) => {
-    sessionManager.invalidateCaches();
+    await sessionManager.invalidateCaches();
     response.status(204).send();
 });
 
 httpServer.post("/invalidate_it", async (request, response) => {
-    sessionManager.invalidateIT();
+    await sessionManager.invalidateIT();
     response.status(204).send();
 });
 
@@ -121,6 +121,5 @@ httpServer.get("/ping", async (request, response) => {
 });
 
 httpServer.get("/minter_cache", async (request, response) => {
-    console.debug(sessionManager.minterCache);
-    response.send(Array.from(sessionManager.minterCache.keys()));
+    response.send(await sessionManager.minterCacheKeys());
 });
